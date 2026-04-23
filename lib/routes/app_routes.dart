@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../features/triage/presentation/screens/home_screen.dart';
 import '../features/triage/presentation/screens/question_screen.dart';
 import '../features/triage/presentation/screens/result_screen.dart';
@@ -20,12 +21,11 @@ class AppRoutes {
         // Services
         Get.lazyPut<GeminiService>(() {
           final svc = GeminiService();
-          // Replace with your actual Gemini API key
-          // In production: read from secure storage / environment
-          svc.initialize(const String.fromEnvironment(
-            'GEMINI_API_KEY',
-            defaultValue: 'YOUR_GEMINI_API_KEY_HERE',
-          ));
+          final apiKey = dotenv.env['AI_API_KEY'];
+          if (apiKey == null || apiKey.isEmpty) {
+            throw StateError('Missing AI_API_KEY in .env');
+          }
+          svc.initialize(apiKey);
           return svc;
         });
 
